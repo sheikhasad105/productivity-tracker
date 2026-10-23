@@ -1,1 +1,188 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1E3A8A">
+<title>Daily Productivity Tracker</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,Segoe UI,Roboto,sans-serif;}
+  body{background:#EEF2F7;min-height:100vh;display:flex;justify-content:center;padding:14px;padding-bottom:90px;}
+  .phone{width:100%;max-width:420px;display:flex;flex-direction:column;gap:12px;}
+  .header{background:#1E3A8A;color:#fff;border-radius:20px;padding:18px;text-align:center;}
+  .header h1{font-size:15px;letter-spacing:1px;}
+  .header p{font-size:11px;color:#BFDBFE;margin-top:4px;}
+  .hero{background:#fff;border-radius:22px;padding:20px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+  .hero .label{font-size:10px;color:#64748B;font-weight:700;letter-spacing:1px;}
+  .hero .pct{font-size:48px;font-weight:800;margin:6px 0;}
+  .bar{height:12px;background:#E2E8F0;border-radius:20px;overflow:hidden;margin-top:10px;}
+  .bar-fill{height:100%;border-radius:20px;transition:.4s;width:0%;}
+  .bar-labels{display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-top:8px;}
+  .green{color:#16A34A;} .red{color:#DC2626;}
+  .summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+  .pill{background:#fff;border-radius:14px;padding:12px 6px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+  .pill .num{font-size:20px;font-weight:800;}
+  .pill .lbl{font-size:9px;color:#64748B;font-weight:700;letter-spacing:.5px;margin-top:2px;}
+  .form{background:#fff;border-radius:20px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+  .form h3{font-size:12px;color:#1E3A8A;font-weight:800;letter-spacing:1px;margin-bottom:12px;}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .field{margin-bottom:10px;}
+  .field label{font-size:10px;font-weight:700;color:#64748B;letter-spacing:.5px;}
+  .field input{width:100%;margin-top:5px;padding:12px;font-size:16px;font-weight:700;border:2px solid #E2E8F0;border-radius:12px;outline:none;transition:.2s;background:#F8FAFC;}
+  .field input:focus{border-color:#2563EB;background:#fff;}
+  .btn{width:100%;padding:14px;background:#1E3A8A;color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:700;letter-spacing:.5px;cursor:pointer;margin-top:6px;transition:.2s;}
+  .btn:active{transform:scale(.98);background:#152C6B;}
+  .history{background:#fff;border-radius:20px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+  .history h3{font-size:12px;color:#1E3A8A;font-weight:800;letter-spacing:1px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+  .history h3 span{font-size:10px;color:#94A3B8;font-weight:600;}
+  .entry{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;}
+  .entry:last-child{border-bottom:none;}
+  .entry .date{color:#0F172A;font-weight:600;flex:1;}
+  .entry .detail{font-size:11px;color:#64748B;margin-right:10px;}
+  .entry .acc{font-weight:800;font-size:14px;padding:4px 10px;border-radius:8px;}
+  .entry .del{color:#DC2626;background:none;border:none;font-size:16px;cursor:pointer;margin-left:8px;padding:2px 6px;}
+  .empty{text-align:center;color:#94A3B8;font-size:12px;padding:20px 0;}
+  .trend{background:#fff;border-radius:20px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+  .trend h3{font-size:12px;color:#1E3A8A;font-weight:800;letter-spacing:1px;margin-bottom:12px;}
+  .chart{display:flex;align-items:flex-end;gap:6px;height:100px;padding-top:10px;}
+  .chart .bar-w{flex:1;background:#E2E8F0;border-radius:6px 6px 0 0;position:relative;min-height:4px;transition:.3s;}
+  .chart .bar-w .fill{position:absolute;bottom:0;left:0;right:0;border-radius:6px 6px 0 0;}
+  .chart .bar-w .d{position:absolute;bottom:-16px;left:0;right:0;text-align:center;font-size:8px;color:#94A3B8;font-weight:600;}
+  .chart-wrap{padding-bottom:18px;}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="header">
+    <h1>DAILY PRODUCTIVITY TRACKER</h1>
+    <p>Account Accuracy Report</p>
+  </div>
+  <div class="hero">
+    <div class="label">TODAY'S ACCURACY</div>
+    <div class="pct" id="pct">—</div>
+    <div class="bar"><div class="bar-fill" id="fill"></div></div>
+    <div class="bar-labels">
+      <span class="green" id="correctLbl">Correct 0</span>
+      <span class="red" id="discLbl">Discrepancy 0</span>
+    </div>
+  </div>
+  <div class="summary">
+    <div class="pill"><div class="num" style="color:#2563EB" id="oTotal">0</div><div class="lbl">TOTAL</div></div>
+    <div class="pill"><div class="num" style="color:#16A34A" id="oCorrect">0</div><div class="lbl">CORRECT</div></div>
+    <div class="pill"><div class="num" style="color:#DC2626" id="oDisc">0</div><div class="lbl">DISCREPANCY</div></div>
+  </div>
+  <div class="form">
+    <h3>➕ ADD TODAY'S ENTRY</h3>
+    <div class="field">
+      <label>DATE</label>
+      <input type="date" id="dateInput">
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>TOTAL ACCOUNTS</label>
+        <input type="number" id="totalInput" placeholder="126" inputmode="numeric">
+      </div>
+      <div class="field">
+        <label>DISCREPANCY</label>
+        <input type="number" id="discInput" placeholder="29" inputmode="numeric">
+      </div>
+    </div>
+    <button class="btn" onclick="addEntry()">💾 SAVE ENTRY</button>
+  </div>
+  <div class="trend">
+    <h3>📊 LAST 7 DAYS TREND</h3>
+    <div class="chart-wrap"><div class="chart" id="chart"></div></div>
+  </div>
+  <div class="history">
+    <h3>📅 HISTORY <span id="countLbl">0 entries</span></h3>
+    <div id="historyList"></div>
+  </div>
+</div>
+<script>
+  const $ = id => document.getElementById(id);
+  let entries = JSON.parse(localStorage.getItem('accuracyEntries') || '[]');
+  $('dateInput').valueAsDate = new Date();
+  function colorFor(acc){ return acc >= 95 ? '#16A34A' : acc >= 80 ? '#F59E0B' : '#DC2626'; }
+  function addEntry(){
+    const date = $('dateInput').value;
+    const total = +$('totalInput').value;
+    const disc  = +$('discInput').value;
+    if(!date){ alert('Please select a date'); return; }
+    if(!total || total <= 0){ alert('Total accounts must be greater than 0'); return; }
+    if(disc < 0 || disc > total){ alert('Discrepancy must be between 0 and Total'); return; }
+    entries = entries.filter(e => e.date !== date);
+    entries.push({ date, total, disc });
+    entries.sort((a,b) => b.date.localeCompare(a.date));
+    localStorage.setItem('accuracyEntries', JSON.stringify(entries));
+    $('totalInput').value = '';
+    $('discInput').value = '';
+    render();
+  }
+  function deleteEntry(date){
+    if(!confirm('Delete entry for ' + date + '?')) return;
+    entries = entries.filter(e => e.date !== date);
+    localStorage.setItem('accuracyEntries', JSON.stringify(entries));
+    render();
+  }
+  function render(){
+    if(entries.length){
+      const e = entries[0];
+      const corr = e.total - e.disc;
+      const acc  = (corr / e.total) * 100;
+      const col  = colorFor(acc);
+      $('pct').textContent = acc.toFixed(2) + '%';
+      $('pct').style.color = col;
+      $('fill').style.width = acc + '%';
+      $('fill').style.background = col;
+      $('correctLbl').textContent = 'Correct ' + corr;
+      $('discLbl').textContent    = 'Discrepancy ' + e.disc;
+    } else {
+      $('pct').textContent = '—';
+      $('pct').style.color = '#94A3B8';
+      $('fill').style.width = '0%';
+      $('correctLbl').textContent = 'Correct 0';
+      $('discLbl').textContent    = 'Discrepancy 0';
+    }
+    const oTotal = entries.reduce((s,e) => s + e.total, 0);
+    const oDisc  = entries.reduce((s,e) => s + e.disc, 0);
+    $('oTotal').textContent   = oTotal;
+    $('oCorrect').textContent = oTotal - oDisc;
+    $('oDisc').textContent    = oDisc;
+    const list = $('historyList');
+    $('countLbl').textContent = entries.length + ' entries';
+    if(!entries.length){
+      list.innerHTML = '<div class="empty">No entries yet. Add your first one above 👆</div>';
+    } else {
+      list.innerHTML = entries.map(e => {
+        const corr = e.total - e.disc;
+        const acc  = (corr / e.total) * 100;
+        const col  = colorFor(acc);
+        return `<div class="entry">
+          <div class="date">${e.date}</div>
+          <div class="detail">${corr}/${e.total}</div>
+          <div class="acc" style="color:${col};background:${col}15">${acc.toFixed(1)}%</div>
+          <button class="del" onclick="deleteEntry('${e.date}')">✕</button>
+        </div>`;
+      }).join('');
+    }
+    const chart = $('chart');
+    const last7 = entries.slice(0, 7).reverse();
+    if(!last7.length){
+      chart.innerHTML = '<div class="empty" style="width:100%">No data</div>';
+    } else {
+      chart.innerHTML = last7.map(e => {
+        const acc  = ((e.total - e.disc) / e.total) * 100;
+        const col  = colorFor(acc);
+        const day  = e.date.slice(5); 
+        return `<div class="bar-w" style="height:100%">
+          <div class="fill" style="height:${acc}%;background:${col}"></div>
+          <div class="d">${day}</div>
+        </div>`;
+      }).join('');
+    }
+  }
+  render();
+</script>
+</body>
+</html>
