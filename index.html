@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,22 +7,30 @@
 <title>Daily Productivity Tracker</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,Segoe UI,Roboto,sans-serif;}
-  body{background:#EEF2F7;min-height:100vh;display:flex;justify-content:center;padding:14px;padding-bottom:90px;}
+  body{background:#EEF2F7;min-height:100vh;display:flex;justify-content:center;padding:14px;padding-bottom:40px; overflow-x:hidden;}
   .phone{width:100%;max-width:420px;display:flex;flex-direction:column;gap:12px;}
-  .header{background:#1E3A8A;color:#fff;border-radius:20px;padding:18px;text-align:center;}
-  .header h1{font-size:15px;letter-spacing:1px;}
-  .header p{font-size:11px;color:#BFDBFE;margin-top:4px;}
-  .hero{background:#fff;border-radius:22px;padding:20px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.06);}
-  .hero .label{font-size:10px;color:#64748B;font-weight:700;letter-spacing:1px;}
-  .hero .pct{font-size:48px;font-weight:800;margin:6px 0;}
-  .bar{height:12px;background:#E2E8F0;border-radius:20px;overflow:hidden;margin-top:10px;}
+  
+  /* Header with 3 dots */
+  .header{background:#1E3A8A;color:#fff;border-radius:20px;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 15px rgba(30,58,138,.2);}
+  .header-text h1{font-size:15px;letter-spacing:1px;}
+  .header-text p{font-size:11px;color:#BFDBFE;margin-top:4px;}
+  .menu-btn{font-size:26px;font-weight:bold;cursor:pointer;padding:0 10px;line-height:1;}
+
+  /* Side-by-Side Cards */
+  .hero-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .hero{background:#fff;border-radius:18px;padding:16px 10px;text-align:center;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+  .hero .label{font-size:9px;color:#64748B;font-weight:800;letter-spacing:0.5px;}
+  .hero .pct{font-size:28px;font-weight:800;margin:6px 0;}
+  .bar{height:8px;background:#E2E8F0;border-radius:20px;overflow:hidden;margin-top:8px;}
   .bar-fill{height:100%;border-radius:20px;transition:.4s;width:0%;}
-  .bar-labels{display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-top:8px;}
+  .bar-labels{display:flex;justify-content:space-between;font-size:9px;font-weight:700;margin-top:6px;}
   .green{color:#16A34A;} .red{color:#DC2626;}
+
   .summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
   .pill{background:#fff;border-radius:14px;padding:12px 6px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.05);}
   .pill .num{font-size:20px;font-weight:800;}
   .pill .lbl{font-size:9px;color:#64748B;font-weight:700;letter-spacing:.5px;margin-top:2px;}
+  
   .form{background:#fff;border-radius:20px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
   .form h3{font-size:12px;color:#1E3A8A;font-weight:800;letter-spacing:1px;margin-bottom:12px;}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
@@ -33,47 +40,77 @@
   .field input:focus{border-color:#2563EB;background:#fff;}
   .btn{width:100%;padding:14px;background:#1E3A8A;color:#fff;border:none;border-radius:14px;font-size:14px;font-weight:700;letter-spacing:.5px;cursor:pointer;margin-top:6px;transition:.2s;}
   .btn:active{transform:scale(.98);background:#152C6B;}
-  .history{background:#fff;border-radius:20px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
-  .history h3{font-size:12px;color:#1E3A8A;font-weight:800;letter-spacing:1px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
-  .history h3 span{font-size:10px;color:#94A3B8;font-weight:600;}
-  .entry{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;}
-  .entry:last-child{border-bottom:none;}
-  .entry .date{color:#0F172A;font-weight:600;flex:1;}
-  .entry .detail{font-size:11px;color:#64748B;margin-right:10px;}
-  .entry .acc{font-weight:800;font-size:14px;padding:4px 10px;border-radius:8px;}
-  .entry .del{color:#DC2626;background:none;border:none;font-size:16px;cursor:pointer;margin-left:8px;padding:2px 6px;}
-  .empty{text-align:center;color:#94A3B8;font-size:12px;padding:20px 0;}
-  .trend{background:#fff;border-radius:20px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+
+  .trend{background:#fff;border-radius:20px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06); margin-bottom:20px;}
   .trend h3{font-size:12px;color:#1E3A8A;font-weight:800;letter-spacing:1px;margin-bottom:12px;}
   .chart{display:flex;align-items:flex-end;gap:6px;height:100px;padding-top:10px;}
   .chart .bar-w{flex:1;background:#E2E8F0;border-radius:6px 6px 0 0;position:relative;min-height:4px;transition:.3s;}
   .chart .bar-w .fill{position:absolute;bottom:0;left:0;right:0;border-radius:6px 6px 0 0;}
   .chart .bar-w .d{position:absolute;bottom:-16px;left:0;right:0;text-align:center;font-size:8px;color:#94A3B8;font-weight:600;}
   .chart-wrap{padding-bottom:18px;}
+
+  /* Side Menu (History Drawer) */
+  .overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:none;z-index:99;}
+  .overlay.open{display:block;}
+  .side-menu{position:fixed;top:0;right:-100%;width:85%;max-width:350px;height:100vh;background:#fff;z-index:100;transition:.3s ease-in-out;display:flex;flex-direction:column;box-shadow:-4px 0 15px rgba(0,0,0,.1);}
+  .side-menu.open{right:0;}
+  .menu-header{padding:20px;background:#1E3A8A;color:#fff;display:flex;justify-content:space-between;align-items:center;}
+  .menu-header h3{font-size:14px;letter-spacing:1px;}
+  .close-btn{font-size:22px;cursor:pointer;background:none;border:none;color:#fff;}
+  .menu-content{padding:15px;overflow-y:auto;flex:1;}
+  
+  /* Month Grouping */
+  .month-group{margin-bottom:20px;}
+  .month-title{font-size:12px;font-weight:800;color:#1E3A8A;background:#E0E7FF;padding:6px 12px;border-radius:8px;display:inline-block;margin-bottom:10px;}
+  
+  .entry{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:13px;}
+  .entry:last-child{border-bottom:none;}
+  .entry .date{color:#0F172A;font-weight:600;flex:1;}
+  .entry .detail{font-size:11px;color:#64748B;margin-right:10px;}
+  .entry .acc{font-weight:800;font-size:13px;padding:4px 8px;border-radius:6px;}
+  .entry .del{color:#DC2626;background:none;border:none;font-size:16px;cursor:pointer;margin-left:8px;padding:2px 6px;}
+  .empty{text-align:center;color:#94A3B8;font-size:12px;padding:20px 0;}
 </style>
 </head>
 <body>
 <div class="phone">
   <div class="header">
-    <h1>DAILY PRODUCTIVITY TRACKER</h1>
-    <p>Account Accuracy Report</p>
+    <div class="header-text">
+      <h1>DAILY PRODUCTIVITY</h1>
+      <p>Account Accuracy Report</p>
+    </div>
+    <div class="menu-btn" onclick="openMenu()">⋮</div>
   </div>
-  <div class="hero">
-    <div class="label">TODAY'S ACCURACY</div>
-    <div class="pct" id="pct">—</div>
-    <div class="bar"><div class="bar-fill" id="fill"></div></div>
-    <div class="bar-labels">
-      <span class="green" id="correctLbl">Correct 0</span>
-      <span class="red" id="discLbl">Discrepancy 0</span>
+  
+  <div class="hero-row">
+    <div class="hero">
+      <div class="label">TODAY'S ACCURACY</div>
+      <div class="pct" id="todayPct">—</div>
+      <div class="bar"><div class="bar-fill" id="todayFill"></div></div>
+      <div class="bar-labels">
+        <span class="green" id="todayCorrect">C: 0</span>
+        <span class="red" id="todayDisc">D: 0</span>
+      </div>
+    </div>
+    <div class="hero">
+      <div class="label">THIS MONTH</div>
+      <div class="pct" id="monthPct">—</div>
+      <div class="bar"><div class="bar-fill" id="monthFill"></div></div>
+      <div class="bar-labels">
+        <span class="green" id="monthCorrect">C: 0</span>
+        <span class="red" id="monthDisc">D: 0</span>
+      </div>
     </div>
   </div>
+
   <div class="summary">
-    <div class="pill"><div class="num" style="color:#2563EB" id="oTotal">0</div><div class="lbl">TOTAL</div></div>
+    <div class="pill"><div class="num" style="color:#2563EB" id="oTotal">0</div><div class="lbl">TOTAL (ALL)</div></div>
     <div class="pill"><div class="num" style="color:#16A34A" id="oCorrect">0</div><div class="lbl">CORRECT</div></div>
     <div class="pill"><div class="num" style="color:#DC2626" id="oDisc">0</div><div class="lbl">DISCREPANCY</div></div>
   </div>
+
   <div class="form">
-    <h3>➕ ADD TODAY'S ENTRY</h3>
+    <h3>➕ ADD ENTRY</h3>
     <div class="field">
       <label>DATE</label>
       <input type="date" id="dateInput">
@@ -90,27 +127,51 @@
     </div>
     <button class="btn" onclick="addEntry()">💾 SAVE ENTRY</button>
   </div>
+
   <div class="trend">
     <h3>📊 LAST 7 DAYS TREND</h3>
     <div class="chart-wrap"><div class="chart" id="chart"></div></div>
   </div>
-  <div class="history">
-    <h3>📅 HISTORY <span id="countLbl">0 entries</span></h3>
-    <div id="historyList"></div>
+</div>
+
+<!-- HISTORY SIDE MENU -->
+<div class="overlay" id="overlay" onclick="closeMenu()"></div>
+<div class="side-menu" id="sideMenu">
+  <div class="menu-header">
+    <h3>📅 HISTORY (MONTHLY)</h3>
+    <button class="close-btn" onclick="closeMenu()">✕</button>
+  </div>
+  <div class="menu-content" id="historyList">
+    <!-- History items will be injected here -->
   </div>
 </div>
+
 <script>
   const $ = id => document.getElementById(id);
   let entries = JSON.parse(localStorage.getItem('accuracyEntries') || '[]');
   $('dateInput').valueAsDate = new Date();
+  
   function colorFor(acc){ return acc >= 95 ? '#16A34A' : acc >= 80 ? '#F59E0B' : '#DC2626'; }
+
+  // MENU FUNCTIONS
+  function openMenu() {
+    $('overlay').classList.add('open');
+    $('sideMenu').classList.add('open');
+  }
+  function closeMenu() {
+    $('overlay').classList.remove('open');
+    $('sideMenu').classList.remove('open');
+  }
+
   function addEntry(){
     const date = $('dateInput').value;
     const total = +$('totalInput').value;
     const disc  = +$('discInput').value;
+    
     if(!date){ alert('Please select a date'); return; }
     if(!total || total <= 0){ alert('Total accounts must be greater than 0'); return; }
     if(disc < 0 || disc > total){ alert('Discrepancy must be between 0 and Total'); return; }
+    
     entries = entries.filter(e => e.date !== date);
     entries.push({ date, total, disc });
     entries.sort((a,b) => b.date.localeCompare(a.date));
@@ -119,53 +180,63 @@
     $('discInput').value = '';
     render();
   }
+
   function deleteEntry(date){
     if(!confirm('Delete entry for ' + date + '?')) return;
     entries = entries.filter(e => e.date !== date);
     localStorage.setItem('accuracyEntries', JSON.stringify(entries));
     render();
   }
+
   function render(){
+    // --- TODAY ---
     if(entries.length){
       const e = entries[0];
       const corr = e.total - e.disc;
       const acc  = (corr / e.total) * 100;
       const col  = colorFor(acc);
-      $('pct').textContent = acc.toFixed(2) + '%';
-      $('pct').style.color = col;
-      $('fill').style.width = acc + '%';
-      $('fill').style.background = col;
-      $('correctLbl').textContent = 'Correct ' + corr;
-      $('discLbl').textContent    = 'Discrepancy ' + e.disc;
+      $('todayPct').textContent = acc.toFixed(1) + '%';
+      $('todayPct').style.color = col;
+      $('todayFill').style.width = acc + '%';
+      $('todayFill').style.background = col;
+      $('todayCorrect').textContent = 'C: ' + corr;
+      $('todayDisc').textContent    = 'D: ' + e.disc;
     } else {
-      $('pct').textContent = '—';
-      $('pct').style.color = '#94A3B8';
-      $('fill').style.width = '0%';
-      $('correctLbl').textContent = 'Correct 0';
-      $('discLbl').textContent    = 'Discrepancy 0';
+      $('todayPct').textContent = '—';
+      $('todayFill').style.width = '0%';
     }
+
+    // --- THIS MONTH ---
+    const today = new Date();
+    const currentMonth = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0');
+    const monthEntries = entries.filter(e => e.date.startsWith(currentMonth));
+    
+    const mTotal = monthEntries.reduce((s,e) => s + e.total, 0);
+    const mDisc  = monthEntries.reduce((s,e) => s + e.disc, 0);
+    const mCorr  = mTotal - mDisc;
+    const mAcc   = mTotal === 0 ? 0 : (mCorr / mTotal) * 100;
+    const mCol   = colorFor(mAcc);
+
+    if(mTotal > 0){
+      $('monthPct').textContent = mAcc.toFixed(1) + '%';
+      $('monthPct').style.color = mCol;
+      $('monthFill').style.width = mAcc + '%';
+      $('monthFill').style.background = mCol;
+      $('monthCorrect').textContent = 'C: ' + mCorr;
+      $('monthDisc').textContent    = 'D: ' + mDisc;
+    } else {
+      $('monthPct').textContent = '—';
+      $('monthFill').style.width = '0%';
+    }
+
+    // --- ALL TIME ---
     const oTotal = entries.reduce((s,e) => s + e.total, 0);
     const oDisc  = entries.reduce((s,e) => s + e.disc, 0);
     $('oTotal').textContent   = oTotal;
     $('oCorrect').textContent = oTotal - oDisc;
     $('oDisc').textContent    = oDisc;
-    const list = $('historyList');
-    $('countLbl').textContent = entries.length + ' entries';
-    if(!entries.length){
-      list.innerHTML = '<div class="empty">No entries yet. Add your first one above 👆</div>';
-    } else {
-      list.innerHTML = entries.map(e => {
-        const corr = e.total - e.disc;
-        const acc  = (corr / e.total) * 100;
-        const col  = colorFor(acc);
-        return `<div class="entry">
-          <div class="date">${e.date}</div>
-          <div class="detail">${corr}/${e.total}</div>
-          <div class="acc" style="color:${col};background:${col}15">${acc.toFixed(1)}%</div>
-          <button class="del" onclick="deleteEntry('${e.date}')">✕</button>
-        </div>`;
-      }).join('');
-    }
+
+    // --- CHART ---
     const chart = $('chart');
     const last7 = entries.slice(0, 7).reverse();
     if(!last7.length){
@@ -180,6 +251,43 @@
           <div class="d">${day}</div>
         </div>`;
       }).join('');
+    }
+
+    // --- HISTORY (GROUPED BY MONTH) ---
+    const list = $('historyList');
+    if(!entries.length){
+      list.innerHTML = '<div class="empty">No entries yet.</div>';
+    } else {
+      let html = '';
+      let currentMonthStr = '';
+      
+      entries.forEach(e => {
+        // Date format to Month Year (e.g., "October 2026")
+        const dateObj = new Date(e.date);
+        const monthYear = dateObj.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+        
+        // Agar naya mahina shuru hua hai toh heading lagao
+        if (monthYear !== currentMonthStr) {
+          currentMonthStr = monthYear;
+          html += `<div class="month-group"><div class="month-title">${currentMonthStr}</div>`;
+        }
+        
+        const corr = e.total - e.disc;
+        const acc  = (corr / e.total) * 100;
+        const col  = colorFor(acc);
+        
+        html += `<div class="entry">
+          <div class="date">${e.date}</div>
+          <div class="detail">${corr}/${e.total}</div>
+          <div class="acc" style="color:${col};background:${col}15">${acc.toFixed(1)}%</div>
+          <button class="del" onclick="deleteEntry('${e.date}')">✕</button>
+        </div>`;
+      });
+      
+      // Last group ko close karo
+      if (entries.length > 0) html += '</div>';
+      
+      list.innerHTML = html;
     }
   }
   render();
